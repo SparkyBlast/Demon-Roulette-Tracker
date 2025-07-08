@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Demon Roulette Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #eee;
+      text-align: center;
+      padding: 40px;
+    }
+    button {
+      padding: 15px;
+      margin: 10px;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #liveBtn { background: #7722aa; color: #fff; }
+    #blankBtn { background: #22aa77; color: #fff; }
+    #resetBtn {
+      background-color: #aa3333;
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    .stats {
+      font-size: 26px;
+      margin-top: 30px;
+      line-height: 1.6;
+    }
+    .status-live { color: #ff4444; }
+    .status-blank { color: #44ff44; }
+    .safe-yes { color: #44ff44; }
+    .safe-no { color: #ff4444; }
+    .danger-low { color: #33ff33; }
+    .danger-med { color: #ffff33; }
+    .danger-high { color: #ff4444; }
+    .danger-veryhigh { color: #ff2222; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Demon Roulette Tracker</h1>
+
+  <div>
+    <button id="liveBtn">Use Live</button>
+    <button id="blankBtn">Use Blank</button>
+  </div>
+  <button id="resetBtn">Reset Round (4 Live / 4 Blank)</button>
+
+  <div class="stats" id="stats">Loading...</div>
+
+  <script>
+    let live = 4, blank = 4;
+
+    function getDangerLevel(chance) {
+      if (chance <= 24) return { text: "🟢 Low", className: "danger-low" };
+      if (chance <= 49) return { text: "🟡 Medium", className: "danger-med" };
+      if (chance <= 74) return { text: "🔴 High", className: "danger-high" };
+      return { text: "☠️ Very High", className: "danger-veryhigh" };
+    }
+
+    function updateDisplay() {
+      const total = live + blank;
+      const chance = total > 0 ? (live / total) * 100 : 0;
+      const status = chance >= 50 ? "Live" : "Blank";
+      const safe = chance < 35 ? "Yes" : "No";
+      const danger = getDangerLevel(chance);
+
+      document.getElementById("stats").innerHTML = `
+        Live: <strong>${live}</strong> | Blank: <strong>${blank}</strong> | Total: <strong>${total}</strong><br><br>
+        Chance of Live: <strong>${chance.toFixed(1)}%</strong><br>
+        Status: <strong class="status-${status.toLowerCase()}">${status}</strong><br>
+        Safe to fire: <strong class="safe-${safe.toLowerCase()}">${safe}</strong><br>
+        Danger Level: <strong class="${danger.className}">${danger.text}</strong>
+      `;
+    }
+
+    document.getElementById("liveBtn").addEventListener("click", () => {
+      if (live > 0) live--;
+      updateDisplay();
+    });
+
+    document.getElementById("blankBtn").addEventListener("click", () => {
+      if (blank > 0) blank--;
+      updateDisplay();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      live = 4;
+      blank = 4;
+      updateDisplay();
+    });
+
+    // Initial display
+    updateDisplay();
+  </script>
+</body>
+</html>
